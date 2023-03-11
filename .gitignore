@@ -1,0 +1,7 @@
+# the reason we added this file to this directory is that we don't wanna push our environment variable to github! we are gonna 
+# keep them secure. we need to make sure that we have aded all folders/ files that we don't want them to be pushed on github.
+# infact, we want git to ignore the files/folders inside of this .gitignore file
+
+__pycache__
+venv/
+.env
