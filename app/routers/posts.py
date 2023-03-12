@@ -34,7 +34,7 @@ def Get_One_Post(id: int, db: Session = Depends(get_db),
     return desired_Post
 
 
-@router.get("/", response_model=list[schemas.Post_Out])
+@router.get("/", response_model=List[schemas.Post_Out])
 #  in order to adding query parameters to filter the results of a request(which here it is get all posts request) based on that,
 #  we have to add those parameters here as arguments path operation function. we can add queries parameters 
 # like: search, limit, skip, etc.
