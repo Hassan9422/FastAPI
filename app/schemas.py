@@ -1,6 +1,6 @@
 from datetime import datetime
 import email
-from msilib.schema import Class
+# from msilib.schema import Class
 from typing import Optional
 from urllib import response
 from jinja2 import pass_environment
