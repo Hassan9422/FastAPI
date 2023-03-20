@@ -1,0 +1,22 @@
+[Unit]
+Description=demo fastapi application
+# wainting for nework first to come up then trying to run our service. 
+# because if we don't have network, nothing else really matters
+After=network.target   
+
+[Service]
+# here we are going to specify what user on our ubuntu server is going to run the server
+User=hassan
+Group=hassan
+# this is going to be the working directory of the project or application that you wanna define current service for it.
+WorkingDirectory=/home/hassan/app/src/
+# we wanna this service to run the gunicorn command. we need to run it in a virtual environment.
+# this is going to be the path to our virtual environment for our app/project that we have defined on our ubuntu machine.
+Environment="PATH=/home/hassan/app/venv/bin"
+EnvironmentFile=/home/hassan/.env
+# this is going to be the path to the gunicorn command that sits in bin folder in our virtual environment folder.
+# then we have to specify the exact command that we wanna run
+ExecStart=/home/hassan/app/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
+
+[Install]
+WantedBy=multi-user.target
