@@ -1,0 +1,25 @@
+# we are gonna spin up/lunch/instantiate as many containers as we want with our desired config with just one docker command. 
+# in the same way we wanna tear down as all of our containers with just one cpmmand, instead of doing it in multiple steps.
+# for this we create a file called docker-composed.yml.
+# yml is a kind of a markup language
+
+
+# first we specify the version of docker-compose we wanna use
+version: "3"
+
+# here wa are gonna specify the services which basically are our containers that we wanna spin up using this file.
+# so in services are are going to specify our containers
+services:
+  social-media-app:
+    build: .
+    ports:
+    # here we are tellinh docker to take whatever data that we recieve on our localhost on port 8000(left one) and forward it to
+    # the port 8000(right one) of our container.
+    # localhost port can be our own personal computer port or production port.
+      - 8000:8000
+
+    # if for whatever reason, we couldn't build our image and it gave us error, maybe we have to pass our environment variables
+    # to our container. we can do that using "env_file:", like below:
+    
+    # env_file:
+    #   - ./.env
