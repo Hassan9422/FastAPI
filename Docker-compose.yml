@@ -11,6 +11,8 @@ version: "3"
 # so in services are are going to specify our containers
 services:
   social-media-app:
+    depends_on:
+      - postgres
     build: .
     ports:
     # here we are tellinh docker to take whatever data that we recieve on our localhost on port 8000(left one) and forward it to
@@ -20,6 +22,41 @@ services:
 
     # if for whatever reason, we couldn't build our image and it gave us error, maybe we have to pass our environment variables
     # to our container. we can do that using "env_file:", like below:
-    
+
     # env_file:
     #   - ./.env
+    environment:
+      - DATABASE_HOSTNAME=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=FastAPI
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=940202
+      - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=30  
+
+
+
+  # in below, we have defined a container for our postgre database. basically using and creating a database container is very
+  # easy and recommended to use. even for development environment it is recommended to use postgres docker image to create 
+  # a postgres database. so let's go and create a one. btw, in fact, we need to create this. because in previous service,
+  # we specifies that our databanse_name is localhost and it means we have ti have database on our localhost which is the container!
+  # but at the moment we don't. so gotta create a one
+
+  postgres:
+  # for this we can use postgres docker image documentation for instruction to how establish a postgres database image
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=940202
+      - POSTGRES_DB=FastAPI
+
+    # this volumes is needed if we wanna protect our data even after killing off the container. if we don't specify this, 
+    # our database data will be gone after container goes down so we definitely don't want that! so we need this. 
+    # this is going to save our data to our local machine, and even after deleting the container and creating a new one, 
+    # we can point the new database to this volume to restore all of our data.
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+        
+volumes:
+   postgres-db:
+
