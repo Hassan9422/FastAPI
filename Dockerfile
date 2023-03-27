@@ -18,4 +18,4 @@ RUN pip install -r requirments.txt
 COPY . .
 
 # final command to run the application inside the docker container
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

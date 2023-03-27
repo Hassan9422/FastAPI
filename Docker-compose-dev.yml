@@ -20,6 +20,22 @@ services:
     # localhost port can be our own personal computer port or production port.
       - 8000:8000
 
+
+    # in this section we wanna use a special volume, because it allowd us to sync a specific folder on our machine
+    # with our docker container, so whatever change we make in our code, will get pushed to our container as well.
+    # before using this special volume here, that was not the case and our changes in code didn't get pushed out in our
+    # container. because our container was created. and our changed had no way to get pushed out in the container.
+    volumes:
+      # left side of colon is the current folder on our machine, and the right side of the colon is the path that we 
+      # wanna sync our desired local folder into it.(i.e we are going to sync ./ folder on our local machine which is the current
+      # directory on our local machine with the /usr/src/app path on our container, so that whatever changes we make in our local 
+      # environment will get pushed out in our container automatically. ro means read only which means the container
+      # can't cahnge anything, it can only read the content inside)
+      - ./:/usr/src/app:ro
+
+    # we can override the last command in our dockerfile by using below command:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
     # if for whatever reason, we couldn't build our image and it gave us error, maybe we have to pass our environment variables
     # to our container. we can do that using "env_file:", like below:
 

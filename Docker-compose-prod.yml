@@ -1,0 +1,78 @@
+# we are gonna spin up/lunch/instantiate as many containers as we want with our desired config with just one docker command. 
+# in the same way we wanna tear down as all of our containers with just one cpmmand, instead of doing it in multiple steps.
+# for this we create a file called docker-composed.yml.
+# yml is a kind of a markup language
+
+
+# first we specify the version of docker-compose we wanna use
+version: "3"
+
+# here wa are gonna specify the services which basically are our containers that we wanna spin up using this file.
+# so in services are are going to specify our containers
+services:
+  social-media-app:
+    # here it's going to create a postgres database before running the application. our app in depndent on this service 
+    # which is our postgres database
+    depends_on:
+      - postgres
+    # in production environment we don't want to build the image. instead we want to pull it out from the duckerhub once we finished 
+    # the development. we have pushed our built image to dockerhub already. so here in production environment, we just need to 
+    # pull it out from dockerhub.
+    image: hassank9422/fastapi
+    ports:
+    # here we are tellinh docker to take whatever data that we recieve on our localhost on port 80(left one) and forward it to
+    # the port 8000(right one) of our container.
+    # localhost port can be our own personal computer port or production port.
+      - 80:8000
+
+    # keep in mind that we don't need bind mounts in production environment so we have deleted it here.
+
+    # we can override the last command in our dockerfile by using below command:
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+
+    # if for whatever reason, we couldn't build our image and it gave us error, maybe we have to pass our environment variables
+    # to our container. we can do that using "env_file:", like below:
+
+    # env_file:
+    #   - ./.env
+
+    # in production, we're gonna grab these env variables from env variables set on the host machine(which is the ubuntu 
+    # machine installed on our production server. "${env_var_name}" is going to search for that specific environment variale set on
+    # the host machine to find and use it). the name values of variables on both sides don't need to match, but it's just easier for
+    # troubleshooting purposes.
+    environment:
+      - DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}  
+
+
+
+  # in below, we have defined a container for our postgre database. basically using and creating a database container is very
+  # easy and recommended to use. even for development environment it is recommended to use postgres docker image to create 
+  # a postgres database. so let's go and create a one. btw, in fact, we need to create this. because in previous service,
+  # we specifies that our databanse_name is localhost and it means we have ti have database on our localhost which is the container!
+  # but at the moment we don't. so gotta create a one
+
+  postgres:
+  # for this we can use postgres docker image documentation for instruction to how establish a postgres database image
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+
+    # this volumes is needed if we wanna protect our data even after killing off the container. if we don't specify this, 
+    # our database data will be gone after container goes down so we definitely don't want that! so we need this. 
+    # this is going to save our data to our local machine, and even after deleting the container and creating a new one, 
+    # we can point the new database to this volume to restore all of our data.
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+        
+volumes:
+   postgres-db:
+
