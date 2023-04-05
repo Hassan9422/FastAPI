@@ -1,6 +1,7 @@
 from .database import client, session, test_user
 from app import schemas
-
+from jose import jwt
+from app.config import settings
 
 def test_root(client):
     res = client.get('/')
@@ -23,4 +24,9 @@ def test_create_user(client):
 
 def test_login_user(client, test_user):
         res = client.post('/login', data={"username": test_user['email'], 'password': test_user['password']})
+        # here we wanna check whether out jwt token is valid or not
+        login_res = schemas.Token(**res.json())
+        payload_data = jwt.decode(login_res.access_token, settings.secret_key, algorithms=[settings.algorithm])
+        id: str = payload_data.get("user_id")
+
         assert res.status_code == 200
